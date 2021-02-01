@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang=en>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://kit.fontawesome.com/5c503e8b03.js" crossorigin="anonymous"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <link rel=icon href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14/svgs/solid/square-root-alt.svg>
+        <title>Linear Regression Calculator</title>
+    </head>
+    <body onload="init()">
+        <div class="container">
+            <h1 class="pt-5 font-weight-bold">Linear Regression Calculator</h1>
+            <br/>
+            <br/>
+            <h3 class="overflow-auto">$$Y=bX+a$$</h3>
+            <h3 class="overflow-auto">$$b={\sum_i^n\left(x_i-\left({\sum_i^{n_x}x_i\over n_x}\right)\right)\left(y_i-\left({\sum_i^{n_y}y_i\over n_y}\right)\right)\over \sum_i^n\left(x_i-\left({\sum_i^nx_i\over n}\right)\right)^2}$$</h3>
+            <h3 class="overflow-auto">$$a={\sum_i^{n_y}y_i-\left(b\right)\left(\sum_i^{n_x}x_i\right)\over n}$$</h3>
+            <br/>
+            <p>Where:
+                <ul>
+                    <li>\(X=\) the predictor values</li>
+                    <li>\(Y=\) the predicted values</li>
+                    <li>\(a=\) the intercept (the predicted value of \(y_i\) when \(x_i=0\)</li>
+                    <li>\(b=\) the slope of the regression line (the amount difference in y_i associated with one unit difference in x_i</li>
+                    <li>\(x_i=\) values of x-variable in sample</li>
+                    <li>\(y_i=\) values of y-variable in sample</li>
+                    <li>\(n=\) length of values</li>
+                    <li>\(i=\) index of values (1, 2, 3, ..., \(n\))</li>
+                </ul>
+            </p>
+            <p class="text-justify">
+                The \(Y=bX+a\) equation is the <b>regression equation</b>, or the equation that predict Y from X, and the values of a (the intercept) and b (the slope) are called the <b>regression coefficients</b>,
+                but it's often refers only to slope. The interpretation of this equation is straightforward.
+            </p>
+            <p class="text-justify">
+                <b>Reference:</b><br/>
+                <a href="https://mega.nz/file/AItVBShb#Z_fuJK3Q1AhylWipEsTc7RTk3hwAIsnu1DdN2jQTTfc" target="_blank">Howell, D. C. 2014. 
+                <i>Fundamental Statistics for the Behavioral Sciences, 8<sup>th</sup> edition</i>.
+                Wadsworth: Wadsworth Cengage Learning.</a>
+            </p>
+            <p class="mb-4">Input your data here<i class="fas fa-chevron-circle-down text-primary px-2"></i>
+                <div class="custom-file mb-3">
+                    <input id="fileInput" type="file" class="custom-file-input" name="filename">
+                    <label id="fileLabel" class="custom-file-label text-secondary border-primary" for="customFile">.txt or .dat</label>
+                </div>
+                <div id ="dataReq" class="text-secondary">
+                    Data requirements:
+                    <ol>
+                        <li>The length of data \(\left(x\right)\) should be the same as the length of data \(\left(y\right)\)</li>
+                        <li>Your data should be in two column</li>
+                        <li>Your data extension should be .txt or .dat</li>
+                    </ol>
+                </div>
+            </p>
+            <div class="mb-5">
+                <button onclick="calculation()" class="btn btn-primary btn-block">Calculate</button>
+            </div>
+            <h2 id="warning" class="pb-5 font-weight-bold d-none text-center text-danger">Your Data Doesn't Meet The requirements</h2>
+            <div id="details" class="d-none">
+                <div class="row">
+                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\(x_i\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="inputX" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#inputX')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\(y_i\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="inputY" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#inputY')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\(n_x\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="lengthX" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#lengthX')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\(n_y\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="lengthY" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#lengthY')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\(\sum_i^{n_x}x_i\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="sumX" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#sumX')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\(\sum_i^{n_y}y_i\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="sumY" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#sumY')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\({\sum_i^{n_x}x_i\over n_x}\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="meanX" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#meanX')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\({\sum_i^{n_y}y_i\over n_y}\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="meanY" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#meanY')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 col-sm-6 col-md-2 col-lg-2 col-xl-2">
+                        <p class="mb-4">\(x_i-\left({\sum_i^{n_x}x_i\over n_x}\right)\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="inputXMinusMeanX" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#inputXMinusMeanX')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-6 col-sm-6 col-md-2 col-lg-2 col-xl-2">
+                        <p class="mb-4">\(y_i-\left({\sum_i^{n_y}y_i\over n_x}\right)\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="inputYMinusMeanY" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#inputYMinusMeanY')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                        <p class="mb-4">\(\left(x_i-\left({\sum_i^{n_x}x_i\over n_x}\right)\right)\left(y_i-\left({\sum_i^{n_y}y_i\over n_x}\right)\right)\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="inputXYMinusMeanXY" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#inputXYMinusMeanXY')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                        <p class="mb-4">\(\sum_i^n\left(x_i-\left({\sum_i^{n_x}x_i\over n_x}\right)\right)\left(y_i-\left({\sum_i^{n_y}y_i\over n_x}\right)\right)\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="sumInputXYMinusMeanXY" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#sumInputXYMinusMeanXY')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\(\left(x_i-\left({\sum_i^{n_x}x_i\over n_x}\right)\right)^2\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="squareInputXMinusMeanX" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#squareInputXMinusMeanX')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\(\sum_i^{n_x}\left(x_i-\left({\sum_i^{n_x}x_i\over n_x}\right)\right)^2\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="sumSquareInputXMinusMeanX" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#sumSquareInputXMinusMeanX')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\(b\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="b" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#b')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\(\left(b\right)\left(\sum_i^{n_x}x_i\right)\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="bTimesSumX" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#bTimesSumX')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\(\sum_i^{n_y}y_i-\left(b\right)\left(\sum_i^{n_x}x_i\right)\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="sumYMinusbTimesSumX" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#sumYMinusbTimesSumX')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                        <p class="mb-4">\(a\)<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="a" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#a')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                        <p class="mb-4 font-weight-bold">Regression Equation:<i class="fas fa-chevron-circle-down text-primary px-2"></i> 
+                            <div id="eq" class="border border-primary rounded overflow-auto p-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                                <span class="text-secondary">. . . . .</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#eq')">copy</button>
+                        </p>
+                        <br/>
+                    </div>
+                </div>
+                <button id="details-hide" class="btn btn-primary btn-block">Hide Details</button>
+            </div>
+            <div id="result">
+                <h3 class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 pb-2 pr-2 pl-2">Regression Equation:</h3>
+                <h3 id="eq-big" class="border border-primary rounded overflow-auto pb-2 pr-2 pl-2 text-nowrap mx-2" style="max-width: fit-content;max-height: 250px;">
+                    <span class="text-secondary">. . . . .</span>
+                </h3>
+                <button class="btn btn-outline-primary btn-sm m-2" onclick="copy('#eq-big')">copy</button>
+                <br/>
+            </div>
+            <br/>
+            <button id="details-show" class="d-none btn btn-primary btn-block">Show Details</button>
+            <br/>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>
